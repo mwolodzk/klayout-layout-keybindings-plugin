@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Show Layout Keybindings</description>
+ <version>1.0</version>
+ <category>pymacros</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name>Help</group-name>
+ <menu-path>help_menu.end</menu-path>
+ <interpreter>python</interpreter>
+ <dsl-interpreter-name/>
+ <text><![CDATA[
+import pya
+
+KEY_ROWS = [
+    [
+        ("Esc", "Cancel mode", "aux"),
+        ("F9", "DRC", "macro"),
+        ("F10", "DRC opts", "macro"),
+        ("F11", "LVS", "macro"),
+        ("F12", "LVS opts", "macro"),
+    ],
+    [
+        ("`", "", "muted"),
+        ("1", "M1", "layer"),
+        ("2", "M2", "layer"),
+        ("3", "M3", "layer"),
+        ("4", "M4", "layer"),
+        ("5", "M5", "layer"),
+        ("6", "TM1", "layer"),
+        ("7", "TM2", "layer"),
+        ("8", "Poly", "layer"),
+        ("9", "Diff", "layer"),
+        ("0", "Layers", "layer"),
+        ("-", "Hier -", "view"),
+        ("+", "Hier +", "view"),
+    ],
+    [
+        ("Tab", "", "muted"),
+        ("Q", "", "muted"),
+        ("W", "", "muted"),
+        ("E", "Descend", "view"),
+        ("R", "Box", "edit"),
+        ("T", "Text", "edit"),
+        ("Y", "Tap", "edit"),
+        ("U", "Undo", "edit"),
+        ("I", "Instance", "edit"),
+        ("O", "", "muted"),
+        ("P", "Path", "edit"),
+        ("[", "Move sel", "edit"),
+        ("]", "Move to", "edit"),
+    ],
+    [
+        ("Caps", "", "muted"),
+        ("A", "Align", "plugin"),
+        ("S", "Partial", "edit"),
+        ("D", "Dim*", "aux"),
+        ("F", "Zoom fit", "view"),
+        ("G", "", "muted"),
+        ("H", "", "muted"),
+        ("J", "", "muted"),
+        ("K", "Center\nRuler", "plugin"),
+        ("L", "", "muted"),
+        (";", "", "muted"),
+        ("'", "", "muted"),
+    ],
+    [
+        ("Shift", "", "muted"),
+        ("Z", "Zoom in", "view"),
+        ("X", "Ascend", "view"),
+        ("C", "", "muted"),
+        ("V", "", "muted"),
+        ("B", "", "muted"),
+        ("N", "Snap\nDiag", "aux"),
+        ("M", "Move\nQuickly", "plugin"),
+        (",", "Hide\ndefault", "layer"),
+        (".", "", "muted"),
+        ("/", "", "muted"),
+        ("Shift", "", "muted"),
+    ],
+]
+
+MODIFIERS = [
+    ("Shift", [
+        ("1..9", "Extend layer focus"),
+        ("P", "Pin Tool"),
+        ("R", "Rotate CW"),
+        ("H", "Flip X"),
+        ("V", "Flip Y"),
+        ("L", "Change layer"),
+        ("M", "Union"),
+        ("C", "Difference"),
+        ("I", "Intersection"),
+        ("U", "Redo"),
+        ("Z", "Zoom out"),
+        ("F", "Max hier"),
+        ("K", "Clear rulers"),
+        ("E", "Edit options"),
+        ("O", "Adjust origin"),
+        ("S", "Select cell"),
+        ("T", "Current cell"),
+    ]),
+    ("Ctrl", [
+        ("A", "Select all"),
+        ("D", "Unselect all"),
+        ("E", "Ascend"),
+        ("F", "Hier = 1"),
+        ("R", "Redraw"),
+        ("N", "Snap orthogonal"),
+        ("O", "Open hier layout"),
+        ("S", "Save hier layout"),
+        ("Shift+D", "Selection dim"),
+        ("Shift+S", "Save as"),
+        ("Alt+N", "New hier layout"),
+        ("Shift+N", "Snap any direction"),
+        ("Shift+R", "Reload libs"),
+        ("Shift+M", "Library map"),
+    ]),
+    ("Alt", [
+        ("Shift+F", "Flatten insts"),
+        ("Shift+M", "Make cell"),
+    ]),
+    ("Ctrl+Shift", [
+        ("F", "Zoom fit selection"),
+        ("N", "Snap any direction"),
+        ("D", "Selection dim"),
+        ("R", "Rotate CCW"),
+        ("S", "Save as"),
+        ("M", "Library map"),
+    ]),
+]
+
+LEGEND = [
+    ("plugin", "#f3d36b", "Advanced plugin"),
+    ("edit", "#8ed0ff", "Built-in edit tool"),
+    ("view", "#95f0a8", "View/navigation"),
+    ("layer", "#ffb67d", "LayerShortcuts"),
+    ("macro", "#d7a6ff", "IHP flow macro"),
+    ("aux", "#d2d6db", "General action"),
+    ("muted", "#35383d", "No dedicated mapping"),
+]
+
+_shortcut_dialog = None
+
+
+def _html(text):
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\n", "<br/>")
+    )
+
+
+def _color_map():
+    return {name: color for name, color, _ in LEGEND}
+
+
+def _render_keycap(key, label, kind):
+    colors = _color_map()
+    color = colors.get(kind, "#35383d")
+    return (
+        "<td class='key %s' style='background:%s'>"
+        "<div class='key-name'>%s</div>"
+        "<div class='key-desc'>%s</div>"
+        "</td>" % (kind, color, _html(key), _html(label))
+    )
+
+
+def _render_keyboard_html():
+    rows = []
+    for row in KEY_ROWS:
+        cells = "".join(_render_keycap(key, label, kind) for key, label, kind in row)
+        rows.append("<tr>%s</tr>" % cells)
+    return "<table class='keyboard'>%s</table>" % "".join(rows)
+
+
+def _render_legend_html():
+    items = []
+    for kind, color, text in LEGEND:
+        items.append(
+            "<div class='legend-item' style='background:%s'>"
+            "<div class='legend-kind'>%s</div>"
+            "<div class='legend-text'>%s</div>"
+            "</div>" % (color, _html(kind), _html(text))
+        )
+    return "<div class='panel'><div class='panel-title'>Legend</div><div class='legend-row'>%s</div></div>" % "".join(items)
+
+
+def _render_modifiers_html():
+    cols = []
+    for modifier, entries in MODIFIERS:
+        body = "<br/>".join("%s: %s" % (_html(key), _html(value)) for key, value in entries)
+        cols.append(
+            "<td class='modifier-col'><div class='modifier-head'>%s</div><div class='modifier-body'>%s</div></td>"
+            % (_html(modifier), body)
+        )
+    return "<div class='panel'><div class='panel-title'>Modifier Combos</div><table class='modifiers'><tr>%s</tr></table></div>" % "".join(cols)
+
+
+def _render_dialog_html():
+    return """
+<html>
+<head>
+<style>
+body { background: #0f1115; color: #f0f3f6; font-family: Sans-Serif; margin: 0; padding: 10px; }
+.header { font-size: 13px; color: #dce3ea; margin-bottom: 12px; }
+.keyboard { border-collapse: separate; border-spacing: 8px; }
+.key { width: 84px; height: 68px; border: 1px solid #1f2328; border-radius: 8px; color: #111111; vertical-align: top; padding: 6px 8px; }
+.key-name { font-size: 12px; font-weight: bold; text-align: left; }
+.key-desc { font-size: 11px; font-weight: bold; text-align: center; margin-top: 12px; white-space: pre-line; }
+.panel { background: #1a1d21; border: 1px solid #2b3137; border-radius: 10px; padding: 12px; margin-top: 12px; }
+.panel-title { font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+.legend-row { white-space: nowrap; }
+.legend-item { display: inline-block; width: 108px; min-height: 58px; margin-right: 8px; margin-bottom: 8px; padding: 8px; border-radius: 8px; color: #111111; vertical-align: top; }
+.legend-kind { font-size: 11px; font-weight: bold; }
+.legend-text { font-size: 10px; margin-top: 4px; }
+.modifiers { width: 100%%; }
+.modifier-col { vertical-align: top; padding-right: 18px; }
+.modifier-head { font-size: 12px; font-weight: bold; color: #f3d36b; margin-bottom: 6px; }
+.modifier-body { font-size: 11px; color: #f0f3f6; }
+.notes { font-size: 12px; color: #c7d0d9; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class='header'>
+Layout keyboard map for IHP SG13G2. Advanced Salt tools replace plain built-ins where available:
+<b>M</b> Move Quickly, <b>A</b> Align, <b>K</b> Center Ruler, <b>Shift+P</b> Pin Tool,
+<b>N</b>/<b>Ctrl+N</b>/<b>Ctrl+Shift+N</b> switch Snap Mode,
+<b>Ctrl+Shift+D</b> toggles Selection Dim.
+</div>
+%s
+%s
+%s
+<div class='notes'>
+Layer row: <b>1..7</b> focus M1..TopMetal2, <b>8</b> poly, <b>9</b> diffusion,
+<b>0</b> restore default layers, <b>,</b> hide default layers.<br/>
+Snap Mode: <b>N</b> diagonal, <b>Ctrl+N</b> orthogonal, <b>Ctrl+Shift+N</b> any direction.<br/>
+Selection Dim: <b>Ctrl+Shift+D</b> toggles dimming and <b>View -&gt; Selection Dim</b> changes strength.<br/>
+New hierarchical layout moved to <b>Ctrl+Alt+N</b>.<br/>
+<b>*</b> The D keycap reminds you about the dim feature, but the actual shortcut is <b>Ctrl+Shift+D</b>.
+</div>
+</body>
+</html>
+""" % (_render_keyboard_html(), _render_legend_html(), _render_modifiers_html())
+
+
+def _close_shortcut_dialog(*_args):
+    global _shortcut_dialog
+    if _shortcut_dialog is not None:
+        _shortcut_dialog.close()
+        _shortcut_dialog = None
+
+
+def show_shortcut_guide():
+    global _shortcut_dialog
+    mw = pya.Application.instance().main_window()
+    parent = mw if mw is not None else None
+
+    if _shortcut_dialog is not None:
+        _shortcut_dialog.raise_()
+        _shortcut_dialog.activateWindow()
+        return
+
+    dlg = pya.QDialog(parent)
+    dlg.setWindowTitle("IHP Layout Keybindings")
+    dlg.resize(1180, 820)
+    dlg.setModal(False)
+    dlg.setWindowModality(pya.Qt.NonModal)
+    dlg.setAttribute(pya.Qt.WA_DeleteOnClose, True)
+    dlg.setWindowFlags(pya.Qt.Window)
+    dlg.setStyleSheet(
+        "QDialog { background-color: #0f1115; }"
+        " QLabel { color: #f0f3f6; }"
+        " QPushButton { background-color: #2d7ef7; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 700; }"
+        " QPushButton:hover { background-color: #4a92fb; }"
+    )
+
+    outer = pya.QVBoxLayout(dlg)
+    outer.setContentsMargins(14, 14, 14, 14)
+    outer.setSpacing(10)
+
+    browser = pya.QTextBrowser()
+    browser.setOpenExternalLinks(False)
+    browser.setReadOnly(True)
+    browser.setFrameShape(pya.QFrame.NoFrame)
+    browser.setHtml(_render_dialog_html())
+    outer.addWidget(browser)
+
+    close_button = pya.QPushButton("Close")
+    close_button.clicked(_close_shortcut_dialog)
+    outer.addWidget(close_button, 0, pya.Qt.AlignRight)
+
+    def _on_dialog_finished(*_args):
+        global _shortcut_dialog
+        _shortcut_dialog = None
+
+    dlg.finished(_on_dialog_finished)
+    _shortcut_dialog = dlg
+    dlg.show()
+    dlg.raise_()
+    dlg.activateWindow()
+
+
+show_shortcut_guide()
+]]></text>
+</klayout-macro>
