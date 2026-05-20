@@ -62,7 +62,7 @@ KEY_ROWS = [
         ("D", "Dim*", "aux"),
         ("F", "Zoom fit", "view"),
         ("G", "", "muted"),
-        ("H", "", "muted"),
+        ("H", "Replace*", "aux"),
         ("J", "", "muted"),
         ("K", "Center\nRuler", "plugin"),
         ("L", "", "muted"),
@@ -77,7 +77,7 @@ KEY_ROWS = [
         ("V", "", "muted"),
         ("B", "", "muted"),
         ("N", "Snap\nDiag", "aux"),
-        ("M", "Move\nQuickly", "plugin"),
+        ("M", "Move", "edit"),
         (",", "Hide\ndefault", "layer"),
         (".", "", "muted"),
         ("/", "", "muted"),
@@ -110,12 +110,15 @@ MODIFIERS = [
         ("D", "Unselect all"),
         ("E", "Ascend"),
         ("F", "Hier = 1"),
+        ("H", "Search and Replace"),
         ("R", "Redraw"),
         ("N", "Snap orthogonal"),
         ("O", "Open hier layout"),
         ("S", "Save hier layout"),
         ("Shift+D", "Selection dim"),
         ("Shift+S", "Save as"),
+        ("Alt+F", "Freeze instances"),
+        ("Alt+G", "Instance Freeze guard"),
         ("Alt+N", "New hier layout"),
         ("Shift+N", "Snap any direction"),
         ("Shift+R", "Reload libs"),
@@ -127,6 +130,7 @@ MODIFIERS = [
     ]),
     ("Ctrl+Shift", [
         ("F", "Zoom fit selection"),
+        ("Alt+F", "Unfreeze instances"),
         ("N", "Snap any direction"),
         ("D", "Selection dim"),
         ("R", "Rotate CCW"),
@@ -230,9 +234,10 @@ body { background: #0f1115; color: #f0f3f6; font-family: Sans-Serif; margin: 0; 
 <body>
 <div class='header'>
 Layout keyboard map for IHP SG13G2. Advanced Salt tools replace plain built-ins where available:
-<b>M</b> Move Quickly, <b>A</b> Align, <b>K</b> Center Ruler, <b>Shift+P</b> Pin Tool,
+<b>M</b> Move, <b>A</b> Align, <b>K</b> Center Ruler, <b>Shift+P</b> Pin Tool,
 <b>N</b>/<b>Ctrl+N</b>/<b>Ctrl+Shift+N</b> switch Snap Mode,
-<b>Ctrl+Shift+D</b> toggles Selection Dim.
+<b>Ctrl+Shift+D</b> toggles Selection Dim,
+<b>Ctrl+Alt+F</b> freezes selected instances.
 </div>
 %s
 %s
@@ -241,9 +246,11 @@ Layout keyboard map for IHP SG13G2. Advanced Salt tools replace plain built-ins 
 Layer row: <b>1..7</b> focus M1..TopMetal2, <b>8</b> poly, <b>9</b> diffusion,
 <b>0</b> restore default layers, <b>,</b> hide default layers.<br/>
 Snap Mode: <b>N</b> diagonal, <b>Ctrl+N</b> orthogonal, <b>Ctrl+Shift+N</b> any direction.<br/>
+Search and Replace: <b>Ctrl+H</b> opens the KLayout editor Search and Replace dialog.<br/>
+Instance Freeze: <b>Ctrl+Alt+F</b> freezes selected instances, <b>Ctrl+Alt+Shift+F</b> unfreezes them, <b>Ctrl+Alt+G</b> toggles the guard.<br/>
 Selection Dim: <b>Ctrl+Shift+D</b> toggles dimming and <b>View -&gt; Selection Dim</b> changes strength.<br/>
 New hierarchical layout moved to <b>Ctrl+Alt+N</b>.<br/>
-<b>*</b> The D keycap reminds you about the dim feature, but the actual shortcut is <b>Ctrl+Shift+D</b>.
+<b>*</b> The D and H keycaps remind you about features whose actual shortcuts use modified combinations.
 </div>
 </body>
 </html>

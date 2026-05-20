@@ -2,7 +2,7 @@
 
 `Layout Keybindings Plugin` adds a Help entry that opens a graphical keyboard map for layout editing shortcuts in KLayout.
 
-The current macro is tuned for the IHP SG13G2 environment and highlights both built-in KLayout actions and advanced Salt-based tools such as Move Quickly, Align, Center Ruler, Selection Dim, and Snap Mode switching.
+The current macro is tuned for the IHP SG13G2 environment and highlights both built-in KLayout actions and advanced Salt-based tools such as Align, Center Ruler, Selection Dim, Instance Freeze, and Snap Mode switching. The plain `M` binding is kept on KLayout's built-in Move action.
 
 ## Features
 
@@ -10,6 +10,7 @@ The current macro is tuned for the IHP SG13G2 environment and highlights both bu
 - Opens a floating, non-modal shortcut guide window
 - Presents a visual keyboard layout instead of a plain text list
 - Documents advanced bindings layered on top of KLayout defaults
+- Documents `Ctrl+H` for Search and Replace and Instance Freeze shortcuts
 - Includes modifier combinations and a legend for action categories
 
 ## Installation
