@@ -52,7 +52,7 @@ KEY_ROWS = [
         ("I", "Instance", "edit"),
         ("O", "", "muted"),
         ("P", "Path", "edit"),
-        ("[", "Move sel", "edit"),
+        ("[", "Move By", "edit"),
         ("]", "Move to", "edit"),
     ],
     [
